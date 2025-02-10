@@ -41,8 +41,8 @@ while run:
         if event.type == pg.QUIT:
             run = False
 
-#update display
-pg.display.flip()
+    #update display
+    pg.display.flip()
 
 pg.quit()
 
