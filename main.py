@@ -20,7 +20,14 @@ enemy_image = pg.image.load('assets/images/enemies/enemy_1.png').convert_alpha()
 enemy_group = pg.sprite.Group()
 turret_group = pg.sprite.Group()
 
-enemy = Enemy((200, 300), enemy_image)
+waypoints = [
+    (100, 100),
+    (400, 200),
+    (400, 100),
+    (200, 300)
+]
+
+enemy = Enemy(waypoints, enemy_image)
 enemy_group.add(enemy)
 
 #game loop
@@ -54,8 +61,8 @@ while run:
             if mouse_pos[0] < c.SCREEN_WIDTH and mouse_pos[1] < c.SCREEN_HEIGHT:
             
 
-#update display
-pg.display.flip()
+    #update display
+    pg.display.flip()
 
 pg.quit()
 
