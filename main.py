@@ -1,22 +1,24 @@
 import pygame as pg
+import json
 from enemy import Enemy 
 import constants as c
-
+from turret import Turret
 #initialise pygame 
 pg.init()
 
 #create clock
 clock = pg.time.Clock()
-
+#induvidual turret img for mouse cursor
+cursour_turret = pg.image.load('assets/images/turrets/cursour_turret.png').convert_alpha
 #create game window 
 screen = pg.display.set_mode((c.SCREEN_WIDTH, c.SCREEN_HEIGHT))
 pg.display.set_caption("Tower Defense")
-
 #load images
 enemy_image = pg.image.load('assets/images/enemies/enemy_1.png').convert_alpha()
 
 #create groups
 enemy_group = pg.sprite.Group()
+turret_group = pg.sprite.Group()
 
 enemy = Enemy((200, 300), enemy_image)
 enemy_group.add(enemy)
@@ -25,21 +27,32 @@ enemy_group.add(enemy)
 run = True
 while run:
 
-    clock.tick(c.FPS)
+    def create_turret(mouse_pos):
 
-    screen.fill("grey100")
-    
-    #update groups
-    enemy_group.update()
+    #map koden her, ned under dette lol
 
-    #draw groups
-    enemy_group.draw(screen)
+        clock.tick(c.FPS)
 
-    #event handler
-    for event in pg.event.get():
-        #quit program
-        if event.type == pg.QUIT:
-            run = False
+        screen.fill("grey100")
+        
+        #update groups
+        enemy_group.update()
+
+        #draw groups
+        enemy_group.draw(screen)
+        turret_group.draw(screen)
+        #event handler
+        for event in pg.event.get():
+            #quit program
+            if event.type == pg.QUIT:
+                run = False
+            #mouse click
+            if event.type == pg.MOUSEBUTTONDOWN and event.button == 1:
+            mouse_pos = pg.mouse.get_pos() 
+            create_turret(mouse_pos)
+            #check if mouse is on the game area
+            if mouse_pos[0] < c.SCREEN_WIDTH and mouse_pos[1] < c.SCREEN_HEIGHT:
+            
 
 #update display
 pg.display.flip()
