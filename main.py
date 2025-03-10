@@ -3,13 +3,14 @@ import json
 from enemy import Enemy 
 import constants as c
 from turret import Turret
+from world import World
 #initialise pygame 
 pg.init()
 
 #create clock
 clock = pg.time.Clock()
 #induvidual turret img for mouse cursor
-cursour_turret = pg.image.load('assets/images/turrets/cursour_turret.png').convert_alpha
+cursour_turret = pg.image.load('assets/images/turrets/cursour_turret.png').convert_alpha()
 #create game window 
 screen = pg.display.set_mode((c.SCREEN_WIDTH, c.SCREEN_HEIGHT))
 pg.display.set_caption("Tower Defense")
