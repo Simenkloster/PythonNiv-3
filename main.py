@@ -62,7 +62,7 @@ def create_turret(mouse_pos):
                if (mouse_tile_x, mouse_tile_y) == (turret.tile_x, turret.tile_y):
                    space_is_free = False
             if space_is_free == True:
-                new_turret = Turret(cursour_turret,  mouse_tile_x,  mouse_tile_y)
+                new_turret = Turret(cursor_turret,  mouse_tile_x,  mouse_tile_y)
                 turret_group.add(new_turret)
            
 
@@ -127,8 +127,11 @@ while run:
             if event.type == pg.MOUSEBUTTONDOWN and event.button == 1:
                 mouse_pos = pg.mouse.get_pos()
                 #check if mouse is on the game area
-                if mouse_pos[0] < c.SCREEN_WIDTH and mouse_pos[1] < c.SCREEN_HEIGHT:
-                    if placing_turrets == True:
+                if mouse_pos[0] < c.SCREEN_WIDTH and mouse_pos[1] < c.SCREEN_HEIGHT:                                                                
+                    pass
+
+
+                if placing_turrets == True:
                         create_turret(mouse_pos)
             
 

@@ -1,6 +1,7 @@
 import pygame as pg
 import math
 import constants as c
+from turret_data import TURRET_DATA
 
 class Turret(pg.sprite.Sprite):
   def __init__(self, sprite_sheet, tile_x, tile_y):
@@ -39,6 +40,18 @@ class Turret(pg.sprite.Sprite):
     self.range_image.set_alpha(100)
     self.range_rect = self.range_image.get_rect()
     self.range_rect.center = self.rect.center
+
+    self.range_image = pg.Surface((self.range * 2, self.range * 2))
+    self.range_image.fill((0, 0, 0))
+    self.range_image.set_colorkey((0, 0, 0))
+    pg.draw.circle(self.range_image, "grey100", (self.range, self.range), self.range)
+    self.range_image.set_alpha(100)
+    self.range_image.get_rect()
+    self.range_rect.center = self.rect.center
+
+    self.upgrade_level = 1
+    self.range = TURRET_DATA[self.upgrade_level - 1].get("range")
+    self.coolwon = self.range = TURRET_DATA[self.upgrade_level - 1].get("cooldown")
 
   def load_images(self):
     #extract images from spritesheet
@@ -84,6 +97,20 @@ class Turret(pg.sprite.Sprite):
         #record completed time and clear target so cooldown can begin
         self.last_shot = pg.time.get_ticks()
         self.target = None
+
+  def upgrade(self):
+    self.upgrade_level += 1
+    self.range = TURRET_DATA[self.upgrade_level - 1].get("range")
+    self.cooldown = self.range = TURRET_DATA[self.upgrade_level - 1].get("cooldown")
+
+    #upgrade range circle
+    self.range_image = pg.Surface((self.range * 2, self.range * 2))
+    self.range_image.fill((0, 0, 0))
+    self.range_image.set_colorkey((0, 0, 0))
+    pg.draw.circle(self.range_image, "grey100", (self.range, self.range), self.range)
+    self.range_image.set_alpha(100)
+    self.range_image.get_rect()
+    self.range_rect.center = self.rect.center
 
   def draw(self, surface):
     self.image = pg.transform.rotate(self.original_image, self.angle - 90)
