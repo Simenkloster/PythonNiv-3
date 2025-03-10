@@ -128,10 +128,7 @@ while run:
                 mouse_pos = pg.mouse.get_pos()
                 #check if mouse is on the game area
                 if mouse_pos[0] < c.SCREEN_WIDTH and mouse_pos[1] < c.SCREEN_HEIGHT:                                                                
-                    pass
-
-
-                if placing_turrets == True:
+                    if placing_turrets == True:
                         create_turret(mouse_pos)
             
 
