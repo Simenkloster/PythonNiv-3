@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.1" orientation="orthogonal" renderorder="right-down" width="15" height="15" tilewidth="48" tileheight="48" infinite="0" nextlayerid="2" nextobjectid="1">
+<map version="1.10" tiledversion="1.11.1" orientation="orthogonal" renderorder="right-down" width="15" height="15" tilewidth="48" tileheight="48" infinite="0" nextlayerid="3" nextobjectid="2">
+ <editorsettings>
+  <export target="map 1..tmj" format="json"/>
+ </editorsettings>
  <tileset firstgid="1" source="Map-tiles.tsx"/>
  <tileset firstgid="14" source="Gress.tsx"/>
  <tileset firstgid="15" source="vei.tsx"/>
@@ -24,4 +27,9 @@
 14,14,14,14,14,14,14,14,14,14,14,14,14,14,14
 </data>
  </layer>
+ <objectgroup id="2" name="waypoints">
+  <object id="1" x="704" y="62.6667">
+   <polyline points="-5.33333,8 -292,9.33333 -292,57.3333 -346.667,56 -346.667,152 -52,152 -53.3333,249.333 -153.333,249.333 -153.333,345.333 -53.3333,344 -53.3333,488 -102.667,488 -104,541.333 -444,537.333 -437.333,388 -297.333,393.333 -292,345.333 -245.333,344 -245.333,244 -486.667,242.667 -486.667,58.6667 -586.667,58.6667 -584,342.667 -532,344 -534.667,442.667 -584,446.667 -581.333,494.667 -692,493.333"/>
+  </object>
+ </objectgroup>
 </map>
