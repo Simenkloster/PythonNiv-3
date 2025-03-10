@@ -10,7 +10,7 @@ pg.init()
 #create clock
 clock = pg.time.Clock()
 #induvidual turret img for mouse cursor
-cursour_turret = pg.image.load('assets/images/turrets/cursour_turret.png').convert_alpha
+cursour_turret = pg.image.load('assets/images/turrets/cursour_turret.png').convert_alpha()
 #create game window 
 screen = pg.display.set_mode((c.SCREEN_WIDTH, c.SCREEN_HEIGHT))
 pg.display.set_caption("Tower Defense")
@@ -41,11 +41,24 @@ waypoints = [
 enemy = Enemy(waypoints, enemy_image)
 enemy_group.add(enemy)
 
+def create_turret(mouse_pos):
+        mouse_tile_x = mouse_pos[0] // c.TILE_SIZE
+        mouse_tile_y = mouse_pos[1] // c.TILE_SIZE
+        mouse_tile_num = (mouse_tile_y * c.COLS) + mouse_tile_x
+        if world.tile_map[mouse_tile_num] == 7:
+            space_is_free = True
+            for turret in turret_group:
+               if (mouse_tile_x, mouse_tile_y) == (turret.tile_x, turret.tile_y):
+                   space_is_free = False
+            if space_is_free == True:
+                new_turret = Turret(cursour_turret,  mouse_tile_x,  mouse_tile_y)
+                turret_group.add(new_turret)
+           
+
 #game loop
 run = True
 while run:
 
-    def create_turret(mouse_pos):
 
     #map koden her, ned under dette lol
 
@@ -59,6 +72,8 @@ while run:
         #draw groups
         enemy_group.draw(screen)
         turret_group.draw(screen)
+
+
         #event handler
         for event in pg.event.get():
             #quit program
@@ -74,7 +89,7 @@ while run:
             
 
     #update display
-    pg.display.flip()
+        pg.display.flip()
 
 pg.quit()
 
