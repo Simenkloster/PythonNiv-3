@@ -24,9 +24,23 @@ last_enemy_spawn = pg.time.get_ticks()
 placing_turrets = False
 selected_turret = None
 
+
+
+
+### LASTER INN BILDER, LYDER OG DATA TIL SPILLET ###
+
+
 #load images
 #map
-map_image = pg.image.load('levels/level.png').convert_alpha()
+
+
+map_image = pg.image.load('levels/level1/map 1.png').convert_alpha()
+#load json data for level
+with open('levels/level1/map 1.tmj') as file:
+  world_data = json.load(file)
+
+
+
 #turret spritesheets
 turret_spritesheets = []
 for x in range(1, c.TURRET_LEVELS + 1):
@@ -57,13 +71,25 @@ logo_image = pg.image.load("assets/images/gui/logo.png").convert_alpha()
 shot_fx = pg.mixer.Sound('assets/audio/shot.wav')
 shot_fx.set_volume(0.5)
 
-#load json data for level
-with open('levels/level.tmj') as file:
-  world_data = json.load(file)
+
 
 #load fonts for displaying text on the screen
 text_font = pg.font.SysFont("Consolas", 24, bold = True)
 large_font = pg.font.SysFont("Consolas", 36)
+
+
+
+
+
+
+
+
+
+
+### Funksjoner som vi trenger
+
+
+
 
 #function for outputting text onto the screen
 def draw_text(text, font, text_col, x, y):
@@ -89,7 +115,7 @@ def create_turret(mouse_pos):
   #calculate the sequential number of the tile
   mouse_tile_num = (mouse_tile_y * c.COLS) + mouse_tile_x
   #check if that tile is grass
-  if world.tile_map[mouse_tile_num] == 7:
+  if world.tile_map[mouse_tile_num] == 14:
     #check that there isn't already a turret there
     space_is_free = True
     for turret in turret_group:
@@ -113,14 +139,20 @@ def clear_selection():
   for turret in turret_group:
     turret.selected = False
 
+
 #create world
 world = World(world_data, map_image)
 world.process_data()
 world.process_enemies()
 
+
+
 #create groups
 enemy_group = pg.sprite.Group()
 turret_group = pg.sprite.Group()
+
+
+
 
 #create buttons
 turret_button = Button(c.SCREEN_WIDTH + 30, 120, buy_turret_image, True)
@@ -158,6 +190,11 @@ while run:
     if selected_turret:
       selected_turret.selected = True
 
+
+
+
+
+
   #########################
   # DRAWING SECTION
   #########################
@@ -172,10 +209,17 @@ while run:
 
   display_data()
 
+
+
+
+  #################################
+  ###HVIS SPILLET FORTSATT PÅGÅR###
+  #################################
   if game_over == False:
     #check if the level has been started or not
     if level_started == False:
       if begin_button.draw(screen):
+        print("starter level" + str(world.level))
         level_started = True
     else:
       #fast forward option
@@ -199,6 +243,9 @@ while run:
       last_enemy_spawn = pg.time.get_ticks()
       world.reset_level()
       world.process_enemies()
+
+
+
 
     #draw buttons
     #button for placing turrets
@@ -228,6 +275,14 @@ while run:
           if world.money >= c.UPGRADE_COST:
             selected_turret.upgrade()
             world.money -= c.UPGRADE_COST
+
+
+
+
+
+    #################################
+    ###   HVIS DET ER GAME OVER   ###
+    #################################          
   else:
     pg.draw.rect(screen, "dodgerblue", (200, 200, 400, 200), border_radius = 30)
     if game_outcome == -1:
@@ -247,6 +302,11 @@ while run:
       #empty groups
       enemy_group.empty()
       turret_group.empty()
+
+
+
+
+
 
   #event handler
   for event in pg.event.get():

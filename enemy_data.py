@@ -124,3 +124,4 @@ ENEMY_DATA = {
     "speed": 6
   }
 }
+
