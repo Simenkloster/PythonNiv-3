@@ -5,6 +5,7 @@ from world import World
 from turret import Turret
 from button import Button
 import constants as c
+from turret_data import TURRETS_LIST
 
 #initialise pygame
 pg.init()
@@ -48,6 +49,11 @@ for x in range(1, c.TURRET_LEVELS + 1):
   turret_spritesheets.append(turret_sheet)
 #individual turret image for mouse cursor
 cursor_turret = pg.image.load('assets/images/turrets/cursor_turret.png').convert_alpha()
+cursor_pancake = pg.image.load('assets/images/turrets/cursor_pancake.png').convert_alpha()
+cursor_gunner = pg.image.load('assets/images/turrets/cursor_gunner.png').convert_alpha()
+cursor_shooter = pg.image.load('assets/images/turrets/cursor_gunner.png').convert_alpha()
+
+
 #enemies
 enemy_images = {
   "weak": pg.image.load('assets/images/enemies/enemy_1.png').convert_alpha(),
