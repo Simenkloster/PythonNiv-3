@@ -20,3 +20,7 @@ TURRET_DATA = [
     "cooldown": 660,
   }
 ]
+
+PANCAKE_TURRET_DATA = [{"range": 111, "cooldown": 1333}]
+GUNNER_TURRET_DATA = [{"range": 234, "cooldown": 2000}]
+STABBER_TURRET_DATA = [{"range": 60, "cooldown": 800}]

@@ -2,14 +2,30 @@
 import pygame as pg
 import math
 import constants as c
-from turret_data import TURRET_DATA
-
+from turret_data import TURRET_DATA 
+from turret_data import  PANCAKE_TURRET_DATA
+from turret_data import  GUNNER_TURRET_DATA
+from turret_data import  STABBER_TURRET_DATA
 class Turret(pg.sprite.Sprite):
-  def __init__(self, sprite_sheets, tile_x, tile_y, shot_fx):
+  def __init__(self, sprite_sheets, tile_x, tile_y, shot_fx, turret_type):
+    print("Turret type ble", turret_type)
     pg.sprite.Sprite.__init__(self)
+    self.turret_type = turret_type
     self.upgrade_level = 1
-    self.range = TURRET_DATA[self.upgrade_level - 1].get("range")
-    self.cooldown = TURRET_DATA[self.upgrade_level - 1].get("cooldown")
+
+    if turret_type == "stabber":
+      self.range = STABBER_TURRET_DATA[self.upgrade_level - 1].get("range")
+      self.cooldown = STABBER_TURRET_DATA[self.upgrade_level - 1].get("cooldown")
+
+    if turret_type == "pancake":
+      self.range = PANCAKE_TURRET_DATA[self.upgrade_level - 1].get("range")
+      self.cooldown = PANCAKE_TURRET_DATA[self.upgrade_level - 1].get("cooldown")
+    if turret_type == "gunner":
+      self.range = GUNNER_TURRET_DATA[self.upgrade_level - 1].get("range")
+      self.cooldown = GUNNER_TURRET_DATA[self.upgrade_level - 1].get("cooldown")  
+   
+
+
     self.last_shot = pg.time.get_ticks()
     self.selected = False
     self.target = None
@@ -62,7 +78,7 @@ class Turret(pg.sprite.Sprite):
       #search for new target once turret has cooled down
       if pg.time.get_ticks() - self.last_shot > (self.cooldown / world.game_speed):
         self.pick_target(enemy_group)
-
+  
   def pick_target(self, enemy_group):
     #find an enemy to target
     x_dist = 0
@@ -120,3 +136,11 @@ class Turret(pg.sprite.Sprite):
     surface.blit(self.image, self.rect)
     if self.selected:
       surface.blit(self.range_image, self.range_rect)
+
+'''
+turret_sheet = pg.image.load('assets/images/turrets/StabberSprites.png').convert_alpha()
+turret_sheet = pg.transform.scale2x(turret_sheet)
+turret_sheet = pg.image.load('assets/images/turrets/StabberSprites.png').convert_alpha()
+turret_sheet = pg.transform.scale2x(turret_sheet)
+turret_sheet = pg.image.load('assets/images/turrets/PancakeSprites.png').convert_alpha()
+turret_sheet = pg.transform.scale2x(turret_sheet)'''
