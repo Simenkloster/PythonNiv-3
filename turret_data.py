@@ -20,3 +20,18 @@ TURRET_DATA = [
     "cooldown": 900,
   }
 ]
+
+TURRETS_LIST = [
+    {
+        "name": "pancake",
+        "cost": 100,
+     },
+     {
+         "name": "stabber",
+         "cost": 100
+     },
+     {
+         "name": "shooter",
+         "cost": 100
+     }
+]
