@@ -24,7 +24,7 @@ level_started = False
 last_enemy_spawn = pg.time.get_ticks()
 placing_turrets = False
 selected_turret = None
-
+menu_active = False
 
 
 
@@ -50,8 +50,28 @@ for x in range(1, c.TURRET_LEVELS + 1):
 #individual turret image for mouse cursor
 cursor_turret = pg.image.load('assets/images/turrets/cursor_turret.png').convert_alpha()
 cursor_pancake = pg.image.load('assets/images/turrets/cursor_pancake.png').convert_alpha()
-cursor_gunner = pg.image.load('assets/images/turrets/cursor_gunner.png').convert_alpha()
 cursor_shooter = pg.image.load('assets/images/turrets/cursor_gunner.png').convert_alpha()
+cursor_stabber = pg.image.load('assets/images/turrets/cursor_stabber.png').convert_alpha()
+
+scale_factor = 2.3  # Adjust this to your liking
+
+# Load images
+cursor_pancake = pg.image.load('assets/images/turrets/cursor_pancake.png').convert_alpha()
+cursor_shooter = pg.image.load('assets/images/turrets/cursor_gunner.png').convert_alpha()
+cursor_stabber = pg.image.load('assets/images/turrets/cursor_stabber.png').convert_alpha()
+
+# Get original sizes
+pancake_size = cursor_pancake.get_size()
+shooter_size = cursor_shooter.get_size()
+stabber_size = cursor_stabber.get_size()
+
+# Scale images up
+cursor_pancake = pg.transform.smoothscale(cursor_pancake, (int(pancake_size[0] * scale_factor), int(pancake_size[1] * scale_factor)))
+cursor_shooter = pg.transform.smoothscale(cursor_shooter, (int(shooter_size[0] * scale_factor), int(shooter_size[1] * scale_factor)))
+cursor_stabber = pg.transform.smoothscale(cursor_stabber, (int(stabber_size[0] * scale_factor), int(stabber_size[1] * scale_factor)))
+
+
+
 
 
 #enemies
@@ -144,6 +164,48 @@ def select_turret(mouse_pos):
 def clear_selection():
   for turret in turret_group:
     turret.selected = False
+
+def show_menu(screen, turret_images):
+  
+  global menu_active
+
+  menu_active = True
+
+  menu_width, menu_height = 300, 150
+
+  menu_x, menu_y = (screen.get_width() - menu_width) // 2, (screen.get_height() - menu_height) // 2
+
+  menu_surface = pg.Surface((menu_width, menu_height), pg.SRCALPHA )
+
+  menu_surface.fill((0, 0, 0, 180))
+
+  screen.blit(menu_surface, (menu_x, menu_y))
+
+
+
+
+  button_width, button_height = 80, 80
+  button_spacing = 20
+  button_x = menu_x + 15
+  button_y = menu_y + 35
+
+
+  for i, turret in enumerate(TURRETS_LIST):
+    btn_rect = pg.Rect(button_x + i * (button_width + button_spacing), button_y, button_width, button_height)
+    pg.draw.rect(screen, (200, 200, 200), btn_rect, border_radius=5)
+    screen.blit(turret_images[turret["name"]], btn_rect.topleft)
+  
+  pg.display.update()
+    
+
+def hide_menu():
+  global menu_active
+  menu_active = False
+
+
+
+
+
 
 
 #create world
@@ -258,8 +320,15 @@ while run:
     #for the "turret button" show cost of turret and draw the button
     draw_text(str(c.BUY_COST), text_font, "grey100", c.SCREEN_WIDTH + 215, 135)
     screen.blit(coin_image, (c.SCREEN_WIDTH + 260, 130))
+
     if turret_button.draw(screen):
-      placing_turrets = True
+      show_menu(screen, {
+        "pancake": cursor_pancake,
+        "shooter": cursor_shooter,
+        "stabber": cursor_stabber
+      })
+
+
     #if placing turrets then show the cancel button as well
     if placing_turrets == True:
       #show cursor turret
@@ -322,6 +391,8 @@ while run:
     #mouse click
     if event.type == pg.MOUSEBUTTONDOWN and event.button == 1:
       mouse_pos = pg.mouse.get_pos()
+      if menu_active:
+        hide_menu()
       #check if mouse is on the game area
       if mouse_pos[0] < c.SCREEN_WIDTH and mouse_pos[1] < c.SCREEN_HEIGHT:
         #clear selected turrets
@@ -333,6 +404,15 @@ while run:
             create_turret(mouse_pos)
         else:
           selected_turret = select_turret(mouse_pos)
+
+  
+  if menu_active == True:
+    show_menu(screen, {
+        "pancake": cursor_pancake,
+        "shooter": cursor_shooter,
+        "stabber": cursor_stabber
+    })
+
 
   #update display
   pg.display.flip()
