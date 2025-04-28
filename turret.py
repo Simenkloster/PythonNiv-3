@@ -4,7 +4,7 @@ import math
 import constants as c
 from turret_data import TURRET_DATA 
 from turret_data import  PANCAKE_TURRET_DATA
-from turret_data import  GUNNER_TURRET_DATA
+from turret_data import  SHOOTER_TURRET_DATA
 from turret_data import  STABBER_TURRET_DATA
 class Turret(pg.sprite.Sprite):
   def __init__(self, sprite_sheets, tile_x, tile_y, shot_fx, turret_type):
@@ -20,9 +20,10 @@ class Turret(pg.sprite.Sprite):
     if turret_type == "pancake":
       self.range = PANCAKE_TURRET_DATA[self.upgrade_level - 1].get("range")
       self.cooldown = PANCAKE_TURRET_DATA[self.upgrade_level - 1].get("cooldown")
-    if turret_type == "gunner":
-      self.range = GUNNER_TURRET_DATA[self.upgrade_level - 1].get("range")
-      self.cooldown = GUNNER_TURRET_DATA[self.upgrade_level - 1].get("cooldown")  
+    
+    if turret_type == "shooter":
+      self.range = SHOOTER_TURRET_DATA[self.upgrade_level - 1].get("range")
+      self.cooldown = SHOOTER_TURRET_DATA[self.upgrade_level - 1].get("cooldown")  
    
 
 

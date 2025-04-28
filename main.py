@@ -6,6 +6,8 @@ from turret import Turret
 from button import Button
 import constants as c
 from turret_data import TURRETS_LIST
+from load_spritesheet import load_spritesheets
+
 
 #initialise pygame
 pg.init()
@@ -135,24 +137,34 @@ def display_data():
   draw_text(str(world.money), text_font, "grey100", c.SCREEN_WIDTH + 50, 70)
   
 
-def create_turret(mouse_pos):
+def create_turret(mouse_pos, turret_type):
+
+  turret_spritesheets = load_spritesheets(turret_type)
+
   mouse_tile_x = mouse_pos[0] // c.TILE_SIZE
   mouse_tile_y = mouse_pos[1] // c.TILE_SIZE
   #calculate the sequential number of the tile
+
   mouse_tile_num = (mouse_tile_y * c.COLS) + mouse_tile_x
   #check if that tile is grass
   if world.tile_map[mouse_tile_num] == 14:
+
     #check that there isn't already a turret there
     space_is_free = True
     for turret in turret_group:
       if (mouse_tile_x, mouse_tile_y) == (turret.tile_x, turret.tile_y):
         space_is_free = False
+
     #if it is a free space then create turret
     if space_is_free == True:
-      new_turret = Turret(turret_spritesheets, mouse_tile_x, mouse_tile_y, shot_fx)
+      new_turret = Turret(turret_spritesheets, mouse_tile_x, mouse_tile_y, shot_fx, turret_type)
       turret_group.add(new_turret)
       #deduct cost of turret
       world.money -= c.BUY_COST
+
+
+
+
 
 def select_turret(mouse_pos):
   mouse_tile_x = mouse_pos[0] // c.TILE_SIZE
@@ -189,14 +201,29 @@ def show_menu(screen, turret_images):
   button_x = menu_x + 15
   button_y = menu_y + 35
 
+  button_rects = []
 
   for i, turret in enumerate(TURRETS_LIST):
     btn_rect = pg.Rect(button_x + i * (button_width + button_spacing), button_y, button_width, button_height)
     pg.draw.rect(screen, (200, 200, 200), btn_rect, border_radius=5)
     screen.blit(turret_images[turret["name"]], btn_rect.topleft)
-  
-  pg.display.update()
     
+    button_rects.append((btn_rect, turret["name"]))
+  
+
+
+  pg.display.update()
+  
+  return button_rects
+
+
+def check_menu_click(button_rects, mouse_pos):
+  for rect, turret_type in button_rects:
+    if rect.collidepoint(mouse_pos):
+      return turret_type
+  return None
+
+
 
 def hide_menu():
   global menu_active
@@ -235,6 +262,8 @@ run = True
 while run:
 
   clock.tick(c.FPS)
+
+  menu_buttons = []
 
   #########################
   # UPDATING SECTION
@@ -322,7 +351,11 @@ while run:
     screen.blit(coin_image, (c.SCREEN_WIDTH + 260, 130))
 
     if turret_button.draw(screen):
-      show_menu(screen, {
+      menu_active = True
+
+
+    if menu_active:
+      menu_buttons = show_menu(screen, {
         "pancake": cursor_pancake,
         "shooter": cursor_shooter,
         "stabber": cursor_stabber
@@ -340,6 +373,9 @@ while run:
       if cancel_button.draw(screen):
         placing_turrets = False
     #if a turret is selected then show the upgrade button
+    
+    
+    
     if selected_turret:
       #if a turret can be upgraded then show the upgrade button
       if selected_turret.upgrade_level < c.TURRET_LEVELS:
@@ -381,18 +417,44 @@ while run:
 
 
 
-
+  selected_turret_type = ""
 
   #event handler
   for event in pg.event.get():
     #quit program
     if event.type == pg.QUIT:
       run = False
+
     #mouse click
     if event.type == pg.MOUSEBUTTONDOWN and event.button == 1:
       mouse_pos = pg.mouse.get_pos()
+
       if menu_active:
-        hide_menu()
+        selected = check_menu_click(menu_buttons, mouse_pos)
+
+        if selected:
+          selected_turret_type = selected
+
+          cost = next((t["cost"] for t in TURRETS_LIST if t["name"] == selected_turret_type), None)
+
+          if world.money >= cost:
+            placing_turrets = True
+            hide_menu()
+
+            if selected_turret_type == "pancake":
+              cursor_turret = cursor_pancake
+            if selected_turret_type == "shooter":
+              cursor_turret = cursor_shooter
+            if selected_turret_type == "stabber":
+              cursor_turret = cursor_stabber
+          continue
+
+
+
+
+
+
+
       #check if mouse is on the game area
       if mouse_pos[0] < c.SCREEN_WIDTH and mouse_pos[1] < c.SCREEN_HEIGHT:
         #clear selected turrets
@@ -401,17 +463,12 @@ while run:
         if placing_turrets == True:
           #check if there is enough money for a turret
           if world.money >= c.BUY_COST:
-            create_turret(mouse_pos)
+            create_turret(mouse_pos, selected)
+            placing_turrets = False
         else:
           selected_turret = select_turret(mouse_pos)
 
   
-  if menu_active == True:
-    show_menu(screen, {
-        "pancake": cursor_pancake,
-        "shooter": cursor_shooter,
-        "stabber": cursor_stabber
-    })
 
 
   #update display
