@@ -49,6 +49,7 @@ turret_spritesheets = []
 for x in range(1, c.TURRET_LEVELS + 1):
   turret_sheet = pg.image.load(f'assets/images/turrets/turret_{x}.png').convert_alpha()
   turret_spritesheets.append(turret_sheet)
+
 #individual turret image for mouse cursor
 cursor_turret = pg.image.load('assets/images/turrets/cursor_turret.png').convert_alpha()
 cursor_pancake = pg.image.load('assets/images/turrets/cursor_pancake.png').convert_alpha()
@@ -57,10 +58,6 @@ cursor_stabber = pg.image.load('assets/images/turrets/cursor_stabber.png').conve
 
 scale_factor = 2.3  # Adjust this to your liking
 
-# Load images
-cursor_pancake = pg.image.load('assets/images/turrets/cursor_pancake.png').convert_alpha()
-cursor_shooter = pg.image.load('assets/images/turrets/cursor_gunner.png').convert_alpha()
-cursor_stabber = pg.image.load('assets/images/turrets/cursor_stabber.png').convert_alpha()
 
 # Get original sizes
 pancake_size = cursor_pancake.get_size()
@@ -432,6 +429,7 @@ while run:
       if menu_active:
         selected = check_menu_click(menu_buttons, mouse_pos)
 
+
         if selected:
           selected_turret_type = selected
 
@@ -449,6 +447,8 @@ while run:
               cursor_turret = cursor_stabber
           continue
 
+        else:
+          menu_active = False
 
 
 
