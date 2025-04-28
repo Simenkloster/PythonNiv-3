@@ -99,10 +99,10 @@ ENEMY_SPAWN_DATA = [
   },
   {
     #15
-    "weak": 25,
-    "medium": 25,
-    "strong": 25,
-    "elite": 25
+    "weak": 0,
+    "medium": 0,
+    "strong": 0,
+    "elite": 1
   }
 ]
 

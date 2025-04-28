@@ -236,7 +236,7 @@ def hide_menu():
 world = World(world_data, map_image)
 world.process_data()
 world.process_enemies()
-
+world.level = 15
 
 
 #create groups
@@ -392,24 +392,7 @@ while run:
     ###   HVIS DET ER GAME OVER   ###
     #################################          
   else:
-    pg.draw.rect(screen, "dodgerblue", (200, 200, 400, 200), border_radius = 30)
-    if game_outcome == -1:
-      draw_text("GAME OVER", large_font, "grey0", 310, 230)
-    elif game_outcome == 1:
-      draw_text("YOU WIN!", large_font, "grey0", 315, 230)
-    #restart level
-    if restart_button.draw(screen):
-      game_over = False
-      level_started = False
-      placing_turrets = False
-      selected_turret = None
-      last_enemy_spawn = pg.time.get_ticks()
-      world = World(world_data, map_image)
-      world.process_data()
-      world.process_enemies()
-      #empty groups
-      enemy_group.empty()
-      turret_group.empty()
+    pass
 
 
 
