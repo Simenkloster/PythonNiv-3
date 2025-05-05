@@ -7,7 +7,7 @@ from button import Button
 import constants as c
 from turret_data import TURRETS_LIST
 from load_spritesheet import load_spritesheets
-
+import random
 
 #initialise pygame
 pg.init()
@@ -133,7 +133,6 @@ def display_data():
   screen.blit(coin_image, (c.SCREEN_WIDTH + 10, 65))
   draw_text(str(world.money), text_font, "grey100", c.SCREEN_WIDTH + 50, 70)
   
-
 def create_turret(mouse_pos, turret_type):
 
   turret_spritesheets = load_spritesheets(turret_type)
@@ -158,10 +157,6 @@ def create_turret(mouse_pos, turret_type):
       turret_group.add(new_turret)
       #deduct cost of turret
       world.money -= c.BUY_COST
-
-
-
-
 
 def select_turret(mouse_pos):
   mouse_tile_x = mouse_pos[0] // c.TILE_SIZE
@@ -213,18 +208,62 @@ def show_menu(screen, turret_images):
   
   return button_rects
 
-
 def check_menu_click(button_rects, mouse_pos):
   for rect, turret_type in button_rects:
     if rect.collidepoint(mouse_pos):
       return turret_type
   return None
 
-
-
 def hide_menu():
   global menu_active
   menu_active = False
+
+
+def reset_game():
+
+  global game_over, game_outcome, level_started, last_enemy_spawn, placing_turrets, selected_turret, menu_active, world, enemy_group, turret_group
+
+  game_over = False
+  game_outcome = 0# -1 is loss & 1 is win
+  level_started = False
+  last_enemy_spawn = pg.time.get_ticks()
+  placing_turrets = False
+  selected_turret = None
+  menu_active = False
+
+  world = World(world_data, map_image)
+  world.process_data()
+  world.process_enemies()
+
+  enemy_group = pg.sprite.Group()
+  turret_group = pg.sprite.Group()
+
+  return
+
+
+def play_win_animation():
+  particles = [[random.randint(0, screen.get_width()), random.randint(-500, 0)] for _ in range(150)]
+  colors = [(255, 0, 0), (0, 255, 0), (0, 128, 255), (255, 255, 0), (255, 0, 255), (0, 255, 255)]
+
+  clock = pg.time.Clock()
+  start_time = pg.time.get_ticks()
+
+  background = screen.copy()
+
+  while pg.time.get_ticks() - start_time < 5000:
+    clock.tick(60)
+
+    screen.blit(background, (0,0))
+
+    for i, (x, y) in enumerate(particles):
+      pg.draw.circle(screen, random.choice(colors), (x, y), 5)  # radius 5 instead of 3
+      particles[i][1] += 5  # fall speed
+
+      if particles[i][1] > screen.get_height():
+          particles[i][1] = random.randint(-100, -10)
+          particles[i][0] = random.randint(0, screen.get_width())
+
+    pg.display.update()
 
 
 
@@ -236,7 +275,6 @@ def hide_menu():
 world = World(world_data, map_image)
 world.process_data()
 world.process_enemies()
-world.level = 15
 
 
 #create groups
@@ -392,7 +430,20 @@ while run:
     ###   HVIS DET ER GAME OVER   ###
     #################################          
   else:
-    pass
+    
+    if game_outcome == -1:
+      pg.draw.rect(screen, (255, 0, 0), (100, 100, 700, 300), border_radius=30)
+      draw_text("YOU LOSE! Click to replay", large_font, (0,0,0), 210, 230)
+    
+    elif game_outcome == 1:
+      pg.draw.rect(screen, (0, 255, 0), (100, 100, 700, 300), border_radius=30)
+      draw_text("YOU WIN! Click to replay", large_font, (0,0,0), 210, 230)
+      play_win_animation()
+
+    if restart_button.draw(screen):
+      reset_game()
+
+
 
 
 

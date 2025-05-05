@@ -36,7 +36,11 @@ class World():
       self.waypoints.append((temp_x, temp_y))
 
   def process_enemies(self):
-    enemies = ENEMY_SPAWN_DATA[self.level - 1]
+    try:
+      enemies = ENEMY_SPAWN_DATA[self.level - 1]
+    except IndexError:
+      return "Ferdig"
+    
     for enemy_type in enemies:
       enemies_to_spawn = enemies[enemy_type]
       for enemy in range(enemies_to_spawn):
