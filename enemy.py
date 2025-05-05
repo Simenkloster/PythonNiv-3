@@ -14,6 +14,7 @@ class Enemy(pg.sprite.Sprite):
     self.health = ENEMY_DATA.get(enemy_type)["health"]
     self.speed = ENEMY_DATA.get(enemy_type)["speed"]
     self.angle = 0
+    self.enemy_type = enemy_type
     self.original_image = images.get(enemy_type)
     self.image = pg.transform.rotate(self.original_image, self.angle)
     self.rect = self.image.get_rect()
@@ -60,3 +61,27 @@ class Enemy(pg.sprite.Sprite):
       world.killed_enemies += 1
       world.money += c.KILL_REWARD
       self.kill()
+
+
+  def draw(self, surface):
+    surface.blit(self.image, self.rect)
+
+    bar_width = self.rect.width * 0.4
+    bar_height = 5
+    bar_x = self.rect.centerx - bar_width//2
+    bar_y = self.rect.top + 5
+
+    health_percent = self.health / ENEMY_DATA.get(self.enemy_type)["health"]
+
+    if health_percent > 0.6:
+      bar_color = (0, 255, 0)
+    elif health_percent > 0.35:
+      bar_color = (255, 255, 0)
+    else:
+      bar_color = (255, 0, 0)
+
+    pg.draw.rect(surface, (50, 50, 50), (bar_x, bar_y, bar_width, bar_height), border_radius=3)
+
+    pg.draw.rect(surface, bar_color, (bar_x, bar_y, int(bar_width * health_percent), bar_height), border_radius=3)
+
+

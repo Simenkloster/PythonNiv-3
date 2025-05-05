@@ -335,7 +335,10 @@ while run:
   world.draw(screen)
 
   #draw groups
-  enemy_group.draw(screen)
+
+  for enemy in enemy_group:
+    enemy.draw(screen)
+
   for turret in turret_group:
     turret.draw(screen)
 
