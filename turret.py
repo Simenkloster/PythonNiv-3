@@ -2,28 +2,36 @@
 import pygame as pg
 import math
 import constants as c
-from turret_data import TURRET_DATA 
 from turret_data import  PANCAKE_TURRET_DATA
 from turret_data import  SHOOTER_TURRET_DATA
 from turret_data import  STABBER_TURRET_DATA
+from load_spritesheet import load_spritesheets
+
 class Turret(pg.sprite.Sprite):
   def __init__(self, sprite_sheets, tile_x, tile_y, shot_fx, turret_type):
-    print("Turret type ble", turret_type)
     pg.sprite.Sprite.__init__(self)
     self.turret_type = turret_type
     self.upgrade_level = 1
 
+    self.damageOutput = 0
+
     if turret_type == "stabber":
       self.range = STABBER_TURRET_DATA[self.upgrade_level - 1].get("range")
       self.cooldown = STABBER_TURRET_DATA[self.upgrade_level - 1].get("cooldown")
+      self.damageOutput = STABBER_TURRET_DATA[self.upgrade_level -1].get("damage")
 
     if turret_type == "pancake":
       self.range = PANCAKE_TURRET_DATA[self.upgrade_level - 1].get("range")
       self.cooldown = PANCAKE_TURRET_DATA[self.upgrade_level - 1].get("cooldown")
+      self.damageOutput = PANCAKE_TURRET_DATA[self.upgrade_level -1].get("damage")
+
     
     if turret_type == "shooter":
       self.range = SHOOTER_TURRET_DATA[self.upgrade_level - 1].get("range")
-      self.cooldown = SHOOTER_TURRET_DATA[self.upgrade_level - 1].get("cooldown")  
+      self.cooldown = SHOOTER_TURRET_DATA[self.upgrade_level - 1].get("cooldown")
+      self.damageOutput = SHOOTER_TURRET_DATA[self.upgrade_level -1].get("damage")
+
+
    
 
 
@@ -66,7 +74,19 @@ class Turret(pg.sprite.Sprite):
     #extract images from spritesheet
     size = sprite_sheet.get_height()
     animation_list = []
-    for x in range(c.ANIMATION_STEPS):
+    
+
+    temp_steps = c.ANIMATION_STEPS
+
+    if self.turret_type == "stabber" and self.upgrade_level == 2:
+      temp_steps = 4
+    if self.turret_type == "shooter" and self.upgrade_level == 2:
+      temp_steps = 5
+    if self.turret_type == "pancake" and self.upgrade_level == 2:
+      temp_steps = 3
+
+
+    for x in range(temp_steps):
       temp_img = sprite_sheet.subsurface(x * size, 0, size, size)
       animation_list.append(temp_img)
     return animation_list
@@ -94,7 +114,7 @@ class Turret(pg.sprite.Sprite):
           self.target = enemy
           self.angle = math.degrees(math.atan2(-y_dist, x_dist))
           #damage enemy
-          self.target.health -= c.DAMAGE
+          self.target.health -= self.damageOutput
           #play sound effect
           self.shot_fx.play()
           break
@@ -115,10 +135,29 @@ class Turret(pg.sprite.Sprite):
 
   def upgrade(self):
     self.upgrade_level += 1
-    self.range = TURRET_DATA[self.upgrade_level - 1].get("range")
-    self.cooldown = TURRET_DATA[self.upgrade_level - 1].get("cooldown")
+
+    if self.turret_type == "stabber":
+      self.range = STABBER_TURRET_DATA[self.upgrade_level-1].get("range")
+      self.cooldown = STABBER_TURRET_DATA[self.upgrade_level-1].get("cooldown")
+      self.damageOutput = STABBER_TURRET_DATA[self.upgrade_level -1].get("damage")
+
+
+    if self.turret_type == "shooter":
+      self.range = SHOOTER_TURRET_DATA[self.upgrade_level-1].get("range")
+      self.cooldown = SHOOTER_TURRET_DATA[self.upgrade_level-1].get("cooldown")
+      self.damageOutput = SHOOTER_TURRET_DATA[self.upgrade_level -1].get("damage")
+
+
+    if self.turret_type == "pancake":
+      self.range = PANCAKE_TURRET_DATA[self.upgrade_level-1].get("range")
+      self.cooldown = PANCAKE_TURRET_DATA[self.upgrade_level-1].get("cooldown")
+      self.damageOutput = PANCAKE_TURRET_DATA[self.upgrade_level -1].get("damage")
+
+    
     #upgrade turret image
-    self.animation_list = self.load_images(self.sprite_sheets[self.upgrade_level - 1])
+    self.animation_list = self.load_images(load_spritesheets(self.turret_type, self.upgrade_level)[0])
+
+
     self.original_image = self.animation_list[self.frame_index]
 
     #upgrade range circle
@@ -138,10 +177,3 @@ class Turret(pg.sprite.Sprite):
     if self.selected:
       surface.blit(self.range_image, self.range_rect)
 
-'''
-turret_sheet = pg.image.load('assets/images/turrets/StabberSprites.png').convert_alpha()
-turret_sheet = pg.transform.scale2x(turret_sheet)
-turret_sheet = pg.image.load('assets/images/turrets/StabberSprites.png').convert_alpha()
-turret_sheet = pg.transform.scale2x(turret_sheet)
-turret_sheet = pg.image.load('assets/images/turrets/PancakeSprites.png').convert_alpha()
-turret_sheet = pg.transform.scale2x(turret_sheet)'''

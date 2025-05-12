@@ -52,9 +52,9 @@ for x in range(1, c.TURRET_LEVELS + 1):
 
 #individual turret image for mouse cursor
 cursor_turret = pg.image.load('assets/images/turrets/cursor_turret.png').convert_alpha()
-cursor_pancake = pg.image.load('assets/images/turrets/cursor_pancake.png').convert_alpha()
-cursor_shooter = pg.image.load('assets/images/turrets/cursor_gunner.png').convert_alpha()
-cursor_stabber = pg.image.load('assets/images/turrets/cursor_stabber.png').convert_alpha()
+cursor_pancake = pg.image.load('assets/images/turrets/cursor_pancake_1.png').convert_alpha()
+cursor_shooter = pg.image.load('assets/images/turrets/cursor_gunner_1.png').convert_alpha()
+cursor_stabber = pg.image.load('assets/images/turrets/cursor_stabber_1.png').convert_alpha()
 
 scale_factor = 2.3  # Adjust this to your liking
 
@@ -135,7 +135,7 @@ def display_data():
   
 def create_turret(mouse_pos, turret_type):
 
-  turret_spritesheets = load_spritesheets(turret_type)
+  turret_spritesheets = load_spritesheets(turret_type, 1)
 
   mouse_tile_x = mouse_pos[0] // c.TILE_SIZE
   mouse_tile_y = mouse_pos[1] // c.TILE_SIZE
@@ -239,6 +239,7 @@ def reset_game():
   turret_group = pg.sprite.Group()
 
   return
+
 
 
 def play_win_animation():
@@ -415,15 +416,29 @@ while run:
     
     
     if selected_turret:
+      cost_to_upgrade_selected_turret = 999
+
+      if selected_turret.turret_type == "stabber":
+        cost_to_upgrade_selected_turret = c.STABBER_UPGRADE_COST
+      if selected_turret.turret_type == "shooter":
+        cost_to_upgrade_selected_turret = c.SHOOTER_UPGRADE_COST
+      if selected_turret.turret_type == "pancake":
+        cost_to_upgrade_selected_turret = c.PANCAKE_UPGRADE_COST
+
+
       #if a turret can be upgraded then show the upgrade button
       if selected_turret.upgrade_level < c.TURRET_LEVELS:
         #show cost of upgrade and draw the button
-        draw_text(str(c.UPGRADE_COST), text_font, "grey100", c.SCREEN_WIDTH + 215, 195)
-        screen.blit(coin_image, (c.SCREEN_WIDTH + 260, 190))
-        if upgrade_button.draw(screen):
-          if world.money >= c.UPGRADE_COST:
-            selected_turret.upgrade()
-            world.money -= c.UPGRADE_COST
+
+        if selected_turret.upgrade_level < 2:
+          draw_text(str(cost_to_upgrade_selected_turret), text_font, "grey100", c.SCREEN_WIDTH + 215, 195)
+          screen.blit(coin_image, (c.SCREEN_WIDTH + 260, 190))
+          if upgrade_button.draw(screen):
+            if world.money >= cost_to_upgrade_selected_turret:
+              selected_turret.upgrade()
+              world.money -= cost_to_upgrade_selected_turret
+        else:
+          draw_text("Max level", text_font, "grey100", c.SCREEN_WIDTH + 32, 195)
 
 
 
