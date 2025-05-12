@@ -28,6 +28,8 @@ placing_turrets = False
 selected_turret = None
 menu_active = False
 
+cost_to_buy = 0
+
 
 
 ### LASTER INN BILDER, LYDER OG DATA TIL SPILLET ###
@@ -133,7 +135,7 @@ def display_data():
   screen.blit(coin_image, (c.SCREEN_WIDTH + 10, 65))
   draw_text(str(world.money), text_font, "grey100", c.SCREEN_WIDTH + 50, 70)
   
-def create_turret(mouse_pos, turret_type):
+def create_turret(mouse_pos, turret_type, cost):
 
   turret_spritesheets = load_spritesheets(turret_type, 1)
 
@@ -156,7 +158,7 @@ def create_turret(mouse_pos, turret_type):
       new_turret = Turret(turret_spritesheets, mouse_tile_x, mouse_tile_y, shot_fx, turret_type)
       turret_group.add(new_turret)
       #deduct cost of turret
-      world.money -= c.BUY_COST
+      world.money -= cost
 
 def select_turret(mouse_pos):
   mouse_tile_x = mouse_pos[0] // c.TILE_SIZE
@@ -170,43 +172,56 @@ def clear_selection():
     turret.selected = False
 
 def show_menu(screen, turret_images):
-  
-  global menu_active
+    global menu_active
+    menu_active = True
 
-  menu_active = True
+    # Menu dimensions and positioning
+    menu_width, menu_height = 460, 300
+    menu_x = ((screen.get_width() - menu_width) // 2)-150
+    menu_y = (screen.get_height() - menu_height) // 2
 
-  menu_width, menu_height = 300, 150
+    # Semi-transparent menu background
+    menu_surface = pg.Surface((menu_width, menu_height), pg.SRCALPHA)
+    menu_surface.fill((173, 215, 230, 220))  # Dark semi-transparent background
+    screen.blit(menu_surface, (menu_x, menu_y))
 
-  menu_x, menu_y = (screen.get_width() - menu_width) // 2, (screen.get_height() - menu_height) // 2
+    # Button dimensions and positioning
+    button_width, button_height = 100, 100
+    button_spacing = 60
+    button_x = menu_x + 20
+    button_y = menu_y + 100
 
-  menu_surface = pg.Surface((menu_width, menu_height), pg.SRCALPHA )
+    # Font for displaying price
+    price_color = (0, 0, 0)
 
-  menu_surface.fill((0, 0, 0, 180))
+    button_rects = []
 
-  screen.blit(menu_surface, (menu_x, menu_y))
+    for i, turret in enumerate(TURRETS_LIST):
+        x = button_x + i * (button_width + button_spacing)
+        btn_rect = pg.Rect(x, button_y, button_width, button_height)
 
+        # Draw button background
+        #pg.draw.rect(screen, (0, 255, 2, 230), btn_rect, border_radius=10)
 
+        # Draw turret image (centered in button)
+        image = turret_images[turret["name"]]
+        img_rect = image.get_rect(center=(btn_rect.centerx, btn_rect.y + 30))
+        screen.blit(image, img_rect)
 
+        # Draw price below image
+        price_text = text_font.render(f"${turret['cost']}", True, price_color)
+        price_rect = price_text.get_rect(center=(btn_rect.centerx, btn_rect.y + 115))
 
-  button_width, button_height = 80, 80
-  button_spacing = 20
-  button_x = menu_x + 15
-  button_y = menu_y + 35
+        type_text = text_font.render(f"{turret['name']}", True, price_color)
+        type_rect = price_text.get_rect(center=(btn_rect.centerx - 25, btn_rect.y - 30))
 
-  button_rects = []
+        screen.blit(price_text, price_rect)
+        screen.blit(type_text, type_rect)
 
-  for i, turret in enumerate(TURRETS_LIST):
-    btn_rect = pg.Rect(button_x + i * (button_width + button_spacing), button_y, button_width, button_height)
-    pg.draw.rect(screen, (200, 200, 200), btn_rect, border_radius=5)
-    screen.blit(turret_images[turret["name"]], btn_rect.topleft)
-    
-    button_rects.append((btn_rect, turret["name"]))
-  
+        button_rects.append((btn_rect, turret["name"]))
 
-
-  pg.display.update()
-  
-  return button_rects
+    pg.display.update()
+    return button_rects
 
 def check_menu_click(button_rects, mouse_pos):
   for rect, turret_type in button_rects:
@@ -476,6 +491,10 @@ while run:
 
     #mouse click
     if event.type == pg.MOUSEBUTTONDOWN and event.button == 1:
+
+      selected_turret_type = None
+      
+
       mouse_pos = pg.mouse.get_pos()
 
       if menu_active:
@@ -485,9 +504,9 @@ while run:
         if selected:
           selected_turret_type = selected
 
-          cost = next((t["cost"] for t in TURRETS_LIST if t["name"] == selected_turret_type), None)
+          cost_to_buy = next((t["cost"] for t in TURRETS_LIST if t["name"] == selected_turret_type), None)
 
-          if world.money >= cost:
+          if world.money >= cost_to_buy:
             placing_turrets = True
             hide_menu()
 
@@ -514,8 +533,9 @@ while run:
         clear_selection()
         if placing_turrets == True:
           #check if there is enough money for a turret
-          if world.money >= c.BUY_COST:
-            create_turret(mouse_pos, selected)
+          print("Cost før vi sender til CT: " + str(cost_to_buy))
+          if world.money >= cost_to_buy:
+            create_turret(mouse_pos, selected, cost_to_buy)
             placing_turrets = False
         else:
           selected_turret = select_turret(mouse_pos)
