@@ -209,8 +209,11 @@ def show_menu(screen, turret_images):
         screen.blit(image, img_rect)
 
         # Draw price below image
-        price_text = text_font.render(f"${turret['cost']}", True, price_color)
-        price_rect = price_text.get_rect(center=(btn_rect.centerx, btn_rect.y + 115))
+        
+        price_text = text_font.render(f"{turret['cost']}", True, price_color)
+        price_rect = price_text.get_rect(center=(btn_rect.centerx + 20, btn_rect.y + 115))
+        screen.blit(coin_image, (price_rect.x - 35, price_rect.y-5))
+
 
         type_text = text_font.render(f"{turret['name']}", True, price_color)
         type_rect = price_text.get_rect(center=(btn_rect.centerx - 25, btn_rect.y - 30))
@@ -401,11 +404,13 @@ while run:
     #draw buttons
     #button for placing turrets
     #for the "turret button" show cost of turret and draw the button
-    draw_text(str(c.BUY_COST), text_font, "grey100", c.SCREEN_WIDTH + 215, 135)
-    screen.blit(coin_image, (c.SCREEN_WIDTH + 260, 130))
 
-    if turret_button.draw(screen):
-      menu_active = True
+    if(len(turret_group)) < c.MAX_TOTAL_TURRETS:
+
+      if turret_button.draw(screen):
+        menu_active = True
+    else:
+      draw_text("Max turrets", text_font, "grey100", c.SCREEN_WIDTH + 10, 130)
 
 
     if menu_active:
