@@ -540,7 +540,8 @@ while run:
           else:
             menu_active = False
 
-
+        else:
+          menu_active = False
 
 
 
