@@ -82,6 +82,7 @@ enemy_images = {
   "strong": pg.image.load('assets/images/enemies/enemy_3.png').convert_alpha(),
   "elite": pg.image.load('assets/images/enemies/enemy_4.png').convert_alpha()
 }
+
 #buttons
 buy_turret_image = pg.image.load('assets/images/buttons/buy_turret.png').convert_alpha()
 cancel_image = pg.image.load('assets/images/buttons/cancel.png').convert_alpha()
@@ -90,6 +91,7 @@ begin_image = pg.image.load('assets/images/buttons/begin.png').convert_alpha()
 restart_image = pg.image.load('assets/images/buttons/restart.png').convert_alpha()
 fast_forward_image = pg.image.load('assets/images/buttons/fast_forward.png').convert_alpha()
 #gui
+
 heart_image = pg.image.load("assets/images/gui/heart.png").convert_alpha()
 coin_image = pg.image.load("assets/images/gui/coin.png").convert_alpha()
 logo_image = pg.image.load("assets/images/gui/logo.png").convert_alpha()
@@ -212,14 +214,22 @@ def show_menu(screen, turret_images):
         
         price_text = text_font.render(f"{turret['cost']}", True, price_color)
         price_rect = price_text.get_rect(center=(btn_rect.centerx + 20, btn_rect.y + 115))
-        screen.blit(coin_image, (price_rect.x - 35, price_rect.y-5))
-
+        
+        max_text = text_font.render(f"MAX", True, (255, 0, 0))
+        max_rect = max_text.get_rect(center=(btn_rect.centerx + 5, btn_rect.y + 115))
 
         type_text = text_font.render(f"{turret['name']}", True, price_color)
-        type_rect = price_text.get_rect(center=(btn_rect.centerx - 25, btn_rect.y - 30))
+        type_rect = price_text.get_rect(center=(btn_rect.centerx - 45, btn_rect.y - 30))
 
-        screen.blit(price_text, price_rect)
+
+        if turret["name"] == "shooter" and world.shooters >= c.MAX_SHOOTERS or turret["name"] == "stabber" and world.stabbers >= c.MAX_STABBERS or turret["name"] == "pancake" and world.pancakes >= c.MAX_PANCAKES:
+          screen.blit(max_text, max_rect)
+        else:
+          screen.blit(price_text, price_rect)
+          screen.blit(coin_image, (price_rect.x - 35, price_rect.y-5))
+        
         screen.blit(type_text, type_rect)
+
 
         button_rects.append((btn_rect, turret["name"]))
 
@@ -373,7 +383,6 @@ while run:
     #check if the level has been started or not
     if level_started == False:
       if begin_button.draw(screen):
-        print("starter level" + str(world.level))
         level_started = True
     else:
       #fast forward option
@@ -488,6 +497,9 @@ while run:
 
   selected_turret_type = ""
 
+
+
+
   #event handler
   for event in pg.event.get():
     #quit program
@@ -509,22 +521,24 @@ while run:
         if selected:
           selected_turret_type = selected
 
+
           cost_to_buy = next((t["cost"] for t in TURRETS_LIST if t["name"] == selected_turret_type), None)
+          if ((selected_turret_type == "shooter" and world.shooters < c.MAX_SHOOTERS) or (selected_turret_type == "stabber" and world.stabbers < c.MAX_STABBERS) or (selected_turret_type == "pancake" and world.pancakes < c.MAX_PANCAKES)):
 
-          if world.money >= cost_to_buy:
-            placing_turrets = True
-            hide_menu()
+            if world.money >= cost_to_buy:
+              placing_turrets = True
+              hide_menu()
 
-            if selected_turret_type == "pancake":
-              cursor_turret = cursor_pancake
-            if selected_turret_type == "shooter":
-              cursor_turret = cursor_shooter
-            if selected_turret_type == "stabber":
-              cursor_turret = cursor_stabber
-          continue
+              if selected_turret_type == "pancake":
+                cursor_turret = cursor_pancake
+              if selected_turret_type == "shooter":
+                cursor_turret = cursor_shooter
+              if selected_turret_type == "stabber":
+                cursor_turret = cursor_stabber
+            continue
 
-        else:
-          menu_active = False
+          else:
+            menu_active = False
 
 
 
@@ -538,9 +552,14 @@ while run:
         clear_selection()
         if placing_turrets == True:
           #check if there is enough money for a turret
-          print("Cost før vi sender til CT: " + str(cost_to_buy))
           if world.money >= cost_to_buy:
             create_turret(mouse_pos, selected, cost_to_buy)
+            if selected == "shooter":
+              world.shooters += 1
+            if selected == "stabber":
+              world.stabbers += 1
+            if selected == "pancake":
+              world.pancakes += 1
             placing_turrets = False
         else:
           selected_turret = select_turret(mouse_pos)

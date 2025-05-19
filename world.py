@@ -18,6 +18,12 @@ class World():
     self.killed_enemies = 0
     self.missed_enemies = 0
 
+    self.shooters = 0
+    self.pancakes = 0
+    self.stabbers = 0
+
+
+
   def process_data(self):
     #look through data to extract relevant info
     for layer in self.level_data["layers"]:
@@ -43,7 +49,7 @@ class World():
     
     for enemy_type in enemies:
       enemies_to_spawn = enemies[enemy_type]
-      for enemy in range(enemies_to_spawn):
+      for _ in range(enemies_to_spawn):
         self.enemy_list.append(enemy_type)
     #now randomize the list to shuffle the enemies
     random.shuffle(self.enemy_list)
